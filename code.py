@@ -1,0 +1,111 @@
+import random
+import sys
+card_values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+
+# draws a card
+def draw_card():
+    drawn_card = random.randint(0, 12)
+    return (card_values[drawn_card])
+
+choice = input("Want to play black jack? Y or N").strip().upper()
+if choice == "Y":
+    print("Okay! Lets play!")
+else:
+    print("Nevermind then...")
+    sys.exit(0)
+
+#base cards drawn
+playercards = []
+dealercards = []
+playerace = None
+dealerace = None
+
+# draws card for player
+def playerdraw():
+    playercards.append(draw_card())
+    if playercards[-1] == 1:
+        if sum(playercards) + 10 <= 21:
+            playercards[-1] = 11
+            global playerace
+            playerace = len(playercards) -1
+
+# draws card for dealer
+def dealerdraw():
+    dealercards.append(draw_card())
+    if dealercards[-1] == 1:
+        if sum(dealercards) + 10 <= 21:
+            dealercards[-1] = 11
+            global dealerace
+            dealerace = len(dealercards) -1
+
+playerdraw()
+playerdraw()
+dealerdraw()
+dealerdraw()
+
+if sum(playercards) == 21 and sum(dealercards) != 21:
+    print("You got a nat blackjack! Luck you!")
+    sys.exit(0)
+if sum(playercards) != 21 and sum(dealercards) == 21:
+    print("Dealer got 21. Better luck next time.")
+    sys.exit(0)
+if sum(playercards) == 21 and sum(dealercards) == 21:
+    print("You got 21! ...But dealer did too. Better luck next time.")
+    sys.exit(0)
+
+print(f"Your cards are {playercards} and your total is {sum(playercards)}")
+print(f"Dealer has a {dealercards[0]}")
+
+def hitstand():
+    while True:
+        choice = input("Hit or stand? (H or S): ").strip().upper()
+        if choice in ["H", "HIT"]:
+            return "H"
+        elif choice in ["S", "STAND"]:
+            return "S"
+        print("Invalid input. Please enter H or S.")
+game = True
+
+while game == True:
+    hit = hitstand()
+    if hit == 'H':
+        playerdraw()
+        if sum(playercards) > 21:
+            if playerace != None:
+                playercards[playerace] = 1
+                playerace = None
+                if sum(playercards) > 21:
+                    print("Bust! You lose! Better luck next time.")
+                    sys.exit(0)
+            else:
+                print("Bust! You lose! Better luck next time.")
+                sys.exit(0)
+        print(f"Your cards are {playercards} and your total is {sum(playercards)}")
+        print(f"Dealer has a {dealercards[0]}")
+    else:
+        while sum(dealercards) < 17:   
+            if sum(dealercards) < 17:
+                dealerdraw()
+                if sum(dealercards) > 21:
+                            if dealerace != None:
+                                dealercards[dealerace] = 1
+                                dealerace = None
+                                if sum(dealercards) > 21:
+                                    print("Dealer busts! You win!")
+                                    sys.exit(0)
+                            else:
+                                print("Dealer busts! You win!")
+                                sys.exit(0)
+        if sum(dealercards) > sum(playercards):
+            print(f"Your cards are {playercards} and your total is {sum(playercards)}")
+            print(f"Dealers cards are {dealercards} and their total is {sum(dealercards)}")
+            print("Dealer wins! You lose!")
+        if sum(dealercards) < sum(playercards):
+                print(f"Your cards are {playercards} and your total is {sum(playercards)}")
+                print(f"Dealers cards are {dealercards} and their total is {sum(dealercards)}")
+                print("You win! Dealer loses!")
+        if sum(dealercards) == sum(playercards):
+                print(f"Your cards are {playercards} and your total is {sum(playercards)}")
+                print(f"Dealers cards are {dealercards} and their total is {sum(dealercards)}")
+                print("Push. Nobody wins. Draw.")
+        game = False
